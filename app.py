@@ -64,7 +64,7 @@ class StudentsResource(Resource):
         args = parser.parse_args()
         new_student = Student(id = args['id'], name=args['name'], email=args['email'], interest=args['interest'], profile_pic=args['profile_pic'])
         db.session.add(new_student)
-        db.sessoin.commit()
+        db.session.commit()
         return {'message': 'Student created successfully'}, 201
 
 
