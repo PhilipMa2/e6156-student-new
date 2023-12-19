@@ -13,10 +13,11 @@ db = SQLAlchemy(app)
 class Student(db.Model):
     __tablename__ = 'students'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Text, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
     interest = db.Column(db.String(50))
+    profile_pic = db.Column(db.Text, nullable=False)
 
 with app.app_context():
     db.create_all()
@@ -25,12 +26,14 @@ parser = reqparse.RequestParser()
 parser.add_argument('name', type=str, required=True, help='Name is required')
 parser.add_argument('email', type=str, required=True, help='Email is required')
 parser.add_argument('interest', type=str)
+parser.add_argument('id', type=str)
+parser.add_argument('profile_pic', type=str)
 
 class StudentResource(Resource):
     def get(self, student_id):
         student = Student.query.get(student_id)
         if student:
-            return {'id': student.id, 'name': student.name, 'email': student.email, 'interest': student.interest}
+            return {'id': student.id, 'name': student.name, 'email': student.email, 'interest': student.interest, 'profile_pic': student.profile_pic}
         else:
             return {'message': 'Student not found'}, 404
         
@@ -59,7 +62,7 @@ class StudentResource(Resource):
 class StudentsResource(Resource):
     def post(self):
         args = parser.parse_args()
-        new_student = Student(name=args['name'], email=args['email'], interest=args['interest'])
+        new_student = Student(id = args['id'], name=args['name'], email=args['email'], interest=args['interest'], profile_pic=args['profile_pic'])
         db.session.add(new_student)
         db.sessoin.commit()
         return {'message': 'Student created successfully'}, 201
