@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
+import logging
 
 app = Flask(__name__)
 
@@ -9,6 +10,21 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 api = Api(app)
 db = SQLAlchemy(app)
+
+handler = logging.FileHandler('app.log')
+handler.setLevel(logging.DEBUG)
+app.logger.addHandler(handler)
+
+@app.before_request
+def log_request_info():
+    app.logger.warning('Request Headers: %s', request.headers)
+    app.logger.warning('Request Body: %s', request.get_data())
+
+@app.after_request
+def log_response_info(response):
+    app.logger.warning('Response Status Code: %s', response.status_code)
+    app.logger.warning('Response Body: %s', response.get_data())
+    return response 
 
 class Student(db.Model):
     __tablename__ = 'students'
