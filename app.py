@@ -23,8 +23,8 @@ with app.app_context():
     db.create_all()
 
 parser = reqparse.RequestParser()
-parser.add_argument('name', type=str, required=True, help='Name is required')
-parser.add_argument('email', type=str, required=True, help='Email is required')
+parser.add_argument('name', type=str)
+parser.add_argument('email', type=str)
 parser.add_argument('interest', type=str)
 parser.add_argument('id', type=str)
 parser.add_argument('profile_pic', type=str)
@@ -42,8 +42,6 @@ class StudentResource(Resource):
         student = Student.query.get(student_id)
 
         if student:
-            student.name = args['name']
-            student.email = args['email']
             student.interest = args['interest']
             db.session.commit()
             return {'message': 'Student updated successfully'}
